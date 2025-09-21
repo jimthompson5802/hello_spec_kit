@@ -1,0 +1,58 @@
+openapi: 3.0.3
+info:
+  title: Simple Web App API
+  version: 1.0.0
+paths:
+  /api/echo:
+    post:
+      summary: Echo input text
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+              required: [text]
+      responses:
+        '200':
+          description: Echo response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  echoed:
+                    type: string
+  /api/calculate:
+    post:
+      summary: Perform a simple arithmetic operation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: number
+                y:
+                  type: number
+                operation:
+                  type: string
+                  enum: [add, subtract, multiply, divide]
+              required: [x, y, operation]
+      responses:
+        '200':
+          description: Operation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: number
+                  error:
+                    type: string
