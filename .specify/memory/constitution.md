@@ -1,50 +1,119 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+```markdown
+<!--
+Sync Impact Report
+- Version change: 2.1.1 -> 1.0.0
+- Modified principles: None renamed; clarified and project-scoped descriptions added
+- Added sections: Technical Constraints, Development Workflow (populated from template)
+- Removed sections: None
+- Templates requiring updates:
+	- .specify/templates/plan-template.md: ✅ updated
+	- .specify/templates/spec-template.md: ⚠ pending review (alignment verified but no text changes)
+	- .specify/templates/tasks-template.md: ⚠ pending review (alignment verified but no text changes)
+	- .specify/templates/agent-file-template.md: ⚠ pending review (manual consolidation may be needed)
+- Follow-up TODOs:
+	- TODO(RATIFICATION_DATE): original adoption date unknown — confirm and replace this token
+	- Manual review: .specify/templates/* for agent-specific guidance and examples to remove agent names if present
+-->
+
+# Hello Spec Kit Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Test-First (NON-NEGOTIABLE)
+All production behavior MUST be driven by tests. For this project: write `pytest` tests
+before implementation (contract and integration tests first). Tests MUST fail initially,
+then be implemented to make them pass following the Red-Green-Refactor cycle. This
+ensures requirements are explicit, regressions are prevented, and design remains
+verifiable.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Single-Project, Local-First Web App
+Keep the repository as a single, simple web app: a Flask backend serving local
+HTML/CSS (static assets) and providing any necessary API endpoints. The app is
+designed to run locally for development and manual testing; no production
+deployment or CI/CD is required by default.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Code Quality & Explicitness
+Follow PEP 8 style (line length up to 120 chars allowed) and use `ruff` for linting
+and automatic formatting. All public functions and methods MUST include type
+hints and Google-style docstrings. Use clear, explicit code over clever
+shortcuts so that tests and reviewers can reason about behavior easily.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Reproducible Environments & Dependency Management
+Development MUST use a Python virtual environment (venv). Dependencies are
+declared in `requirements.txt` and installed with the project's install
+instruction. The repository MUST include a `.gitignore` that excludes the venv and
+other non-source artifacts. Network calls in tests MUST be mocked; use the
+`requests` library only in implementation and mock it during tests.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Observability & Error Handling
+Provide structured logging and clear error handling for dev-time debugging. Log
+enough context to reproduce issues locally. Fail-fast on unexpected states so
+tests surface defects immediately.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Technical Constraints
+The project targets a modern Python 3 runtime (Python 3.11+ recommended). Primary
+stack elements:
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- Backend: `Flask` (local development server)
+- HTTP client: `requests`
+- Testing: `pytest` (TDD workflow)
+- Linting/formatting: `ruff`
+- Styling: plain CSS for static assets
+- Virtual environment: `venv` (or equivalent) with dependencies in
+	`requirements.txt`.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+Install command (follow project README):
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+```
+uv pip install -r requirements.txt
+```
+
+If `uv` is not available in your environment, use the equivalent environment's
+pip invocation (e.g., `python -m pip install -r requirements.txt`).
+
+## Development Workflow
+
+1. Create or activate the project's virtual environment.
+2. Write failing `pytest` tests that express the requirement (contract/unit/integration).
+3. Run `pytest` to confirm tests fail.
+4. Implement minimal code to make tests pass.
+5. Run `ruff` and correct any issues; ensure formatting and linting pass.
+6. Repeat the Red-Green-Refactor cycle until features are complete.
+
+Local run examples (developer commands):
+
+```
+# create venv
+python -m venv .venv
+source .venv/bin/activate
+
+# install deps
+uv pip install -r requirements.txt
+
+# run tests
+pytest
+
+# run the app (development)
+export FLASK_APP=src.app:app
+flask run
+```
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Amendments to this constitution MUST be made via a documented change (PR or
+patch) that includes: the proposed changes, rationale, and a migration or
+compliance plan for affected templates and tooling. For non-controversial
+clarifications (typos, wording), a patch-level bump is appropriate. For adding
+or materially changing principles or governance, a minor bump is required. For
+removing or redefining principles in incompatible ways, a major bump is
+required.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Compliance expectations:
+
+- Developers MUST run tests and `ruff` locally before pushing changes.
+- Tests that interact with network or filesystem MUST be isolated and mocked in
+	CI-like runs (local test contexts).
+- Maintain a `.gitignore` that excludes virtual environments and editor files.
+
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): original adoption date unknown | **Last Amended**: 2025-09-21
+```
