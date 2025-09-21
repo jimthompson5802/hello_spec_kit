@@ -43,6 +43,8 @@ python src/app.py
 
 Open a browser at `http://localhost:5000` (or the port printed by the server) to view the static demo UI.
 
+![](./images/app_web_page.png)
+
 Testing
 
 Run the full test suite with pytest:
