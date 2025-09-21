@@ -1,3 +1,6 @@
+## /plan
+[Prompt Content](./spec-kit_prompts/plan_prompt.md)
+
 jimthompson5802: Follow instructions in [plan.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/plan.prompt.md).
 
 GitHub Copilot: 
@@ -150,6 +153,8 @@ Starting (6/6) *Report results*
 Which next step would you like me to do? (I can immediately generate `tasks.md` or begin scaffolding the Flask app and tests.)
 
 Made changes.
+
+## /tasks
 
 jimthompson5802: I can run the /tasks command to generate tasks.md (Phase 2) now and create the concrete task list, estimates, and acceptance criteria.
 

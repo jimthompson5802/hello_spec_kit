@@ -1,3 +1,7 @@
+## /constituion
+
+[Prompt Content](./spec-kit_prompts/constitution_prompt.md)
+
 jimthompson5802: Follow instructions in [constitution.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/constitution.prompt.md).
 single user web app with a python backend built with `Flask` that runs locally.
 

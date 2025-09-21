@@ -1,3 +1,7 @@
+## /specify
+
+[Prompt Content](./spec-kit_prompts/specify_prompt.md)
+
 jimthompson5802: Follow instructions in [specify.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/specify.prompt.md).
 Simple web application with a single web page that contains:
 * center all content on the page

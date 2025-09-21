@@ -1,3 +1,5 @@
+## /implement
+
 jimthompson5802: Follow instructions in [implement.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/implement.prompt.md).
 
 GitHub Copilot: I'll create a short execution plan (todo list), then run the repo prerequisite script and read the task and plan docs. 
