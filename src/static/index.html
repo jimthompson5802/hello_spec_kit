@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Simple Web App</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Simple Web App</h1>
+
+      <section class="echo">
+        <h2>Echo Input</h2>
+        <label for="enter-text">Enter Text</label>
+        <div class="row">
+          <input id="enter-text" type="text" />
+          <button id="echo-btn" class="btn btn-blue">Echo</button>
+        </div>
+        <div>
+          <label for="echo-output">Output</label>
+          <input id="echo-output" type="text" readonly />
+        </div>
+      </section>
+
+      <hr />
+
+      <section class="calculator">
+        <h2>Simple Calculator</h2>
+        <div class="inputs row">
+          <div class="col">
+            <label for="x">X</label>
+            <input id="x" type="text" />
+          </div>
+          <div class="col">
+            <label for="y">Y</label>
+            <input id="y" type="text" />
+          </div>
+        </div>
+
+        <div class="calc-buttons row">
+          <button data-op="add" class="btn btn-green">add</button>
+          <button data-op="subtract" class="btn btn-green">subtract</button>
+          <button data-op="multiply" class="btn btn-green">multiply</button>
+          <button data-op="divide" class="btn btn-green">divide</button>
+        </div>
+
+        <div>
+          <label for="result">Results</label>
+          <input id="result" type="text" readonly />
+        </div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+  </html>

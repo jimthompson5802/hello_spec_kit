@@ -1,0 +1,17 @@
+# requirements.txt
+# Generated from `constitution.md` and `plan.md` (inferred minimal dev/runtime deps)
+# Runtime
+Flask>=2.2.3,<3.0
+requests>=2.31.0,<3.0
+
+# Testing
+pytest>=7.2.0,<8.0
+pytest-mock>=3.10.0,<4.0
+
+# Validation & config
+pydantic>=1.10.0,<2.0
+python-dotenv>=1.0.0,<2.0
+
+# Linting/formatting
+ruff>=0.12.0,<1.0
+
