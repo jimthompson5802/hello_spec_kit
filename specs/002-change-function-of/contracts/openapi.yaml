@@ -1,0 +1,41 @@
+openapi: 3.1.0
+info:
+  title: Add API
+  version: 0.1.0
+paths:
+  /api/add:
+    post:
+      summary: Compute addition or concatenation of X and Y
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: string
+                y:
+                  type: string
+              required: [x, y]
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result: {}
+                  type:
+                    type: string
+                    enum: [number, string]
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
