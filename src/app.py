@@ -13,8 +13,7 @@ from typing import Any, Dict, Tuple
 
 from flask import Flask, Response, jsonify, request, send_from_directory
 
-from .services import calculate, echo_text
-
+from .services import add_xy, calculate, echo_text
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 
@@ -85,6 +84,27 @@ def api_calculate() -> Tuple[Response, int]:
         return jsonify({"result": result.result, "error": result.error}), 400
 
     return jsonify({"result": result.result, "error": result.error}), 200
+
+
+@app.route("/api/add", methods=["POST"])
+def api_add() -> Tuple[Response, int]:
+    """Endpoint implementing the Add behavior described in the spec.
+
+    Accepts JSON `{x, y}` and returns either a numeric sum or a concatenated string.
+    Returns 400 for invalid/missing inputs.
+    """
+    try:
+        data = request.get_json(silent=False) or {}
+    except Exception:
+        logger.exception("Invalid JSON in /api/add request")
+        return jsonify({"error": "invalid JSON"}), 400
+
+    try:
+        result = add_xy(data)
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+
+    return jsonify(result), 200
 
 
 if __name__ == "__main__":

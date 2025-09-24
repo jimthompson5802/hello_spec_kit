@@ -34,11 +34,22 @@ document.addEventListener('DOMContentLoaded', () => {
       const x = xInput.value.trim();
       const y = yInput.value.trim();
       try {
-        const data = await postJson('/api/calculate', { x, y, operation: op });
-        if (data.error) {
-          resultOutput.value = `Error: ${data.error}`;
+        if (op === 'add') {
+          // Use new backend Add endpoint which handles mixed types
+          const data = await postJson('/api/add', { x, y });
+          if (data.error) {
+            resultOutput.value = `Error: ${data.error}`;
+          } else {
+            resultOutput.value = String(data.result);
+          }
         } else {
-          resultOutput.value = String(data.result);
+          // Keep existing calculate endpoint for other operations
+          const data = await postJson('/api/calculate', { x, y, operation: op });
+          if (data.error) {
+            resultOutput.value = `Error: ${data.error}`;
+          } else {
+            resultOutput.value = String(data.result);
+          }
         }
       } catch (err) {
         resultOutput.value = 'Error';
