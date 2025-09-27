@@ -41,30 +41,29 @@ A user visits a simple web application and can interact with two main functions:
 ### Acceptance Scenarios
 1. **Given** the user is on the web page, **When** they click the "Echo" button, **Then** the bottom section displays an input field with "Enter Text" label and an "Echo Input" button
 2. **Given** the Echo interface is displayed, **When** the user enters text and clicks "Echo Input", **Then** the output box displays "YOU ENTERED: " followed by the entered text
-6. **Given** the Echo interface is displayed with empty text input, **When** the user clicks "Echo Input", **Then** the output box displays "Please enter text" error message
-3. **Given** the user is on the web page, **When** they click the "Compute" button, **Then** the bottom section displays a calculator interface with X and Y input fields and four operation buttons
-4. **Given** the Compute interface is displayed with numeric values in X and Y fields, **When** the user clicks any operation button (add, subtract, multiply, divide), **Then** the calculation result appears in the Results output box
-5. **Given** the Compute interface is displayed with text values in X or Y fields, **When** the user clicks the "add" button, **Then** the text concatenation result appears in the Results output box
+3. **Given** the Echo interface is displayed with empty text input, **When** the user clicks "Echo Input", **Then** the output box displays "Please enter text" error message
+4. **Given** the user is on the web page, **When** they click the "Compute" button, **Then** the bottom section displays a calculator interface with X and Y input fields and four operation buttons
+5. **Given** the Compute interface is displayed with numeric values in X and Y fields, **When** the user clicks any operation button (add, subtract, multiply, divide), **Then** the calculation result appears in the output box
+6. **Given** the Compute interface is displayed with text values in X or Y fields, **When** the user clicks the "add" button, **Then** the text concatenation result appears in the output box
 
 ### Edge Cases
-- When user enters non-numeric values in calculator fields for subtract, multiply, or divide operations, system displays "Invalid input" error message in Results box
-- When division by zero is attempted, system displays "Cannot divide by zero" in Results box
+- When user enters non-numeric values in calculator fields for subtract, multiply, or divide operations, system displays "Invalid input" error message in output box
+- When division by zero is attempted, system displays "Cannot divide by zero" in output box
 - When switching between Echo and Compute functions, all input fields and results are cleared to provide clean interface
 
 ## Requirements
 
 ### Functional Requirements
 - **FR-001**: System MUST display a static top section with "Simple Web App" title, "Echo" and "Compute" buttons, and a horizontal separator
-- **FR-002**: System MUST center all content on the web page with fixed width layout optimized for desktop computers
+- **FR-002**: System MUST center all content on the web page with fixed width layout designed specifically for desktop computer screens
 - **FR-003**: System MUST display Echo interface in bottom section when "Echo" button is clicked, replacing any previous content and clearing all input fields
 - **FR-004**: System MUST display Compute interface in bottom section when "Compute" button is clicked, replacing any previous content and clearing all input fields
 - **FR-005**: System MUST process echo requests when user enters text and clicks "Echo Input" button, displaying "YOU ENTERED: " followed by the input text in the output box
 - **FR-013**: System MUST display "Please enter text" error message in output box when "Echo Input" button is clicked with empty text input field
-- **FR-014**: System MUST use fixed width layout designed specifically for desktop computer screens
 - **FR-006**: System MUST perform mathematical calculations (add, subtract, multiply, divide) when numeric values are provided in X and Y fields
 - **FR-007**: System MUST perform text concatenation when "add" button is clicked and either X or Y contains string values
-- **FR-011**: System MUST display error message "Invalid input" in Results box when non-numeric values are entered for subtract, multiply, or divide operations
-- **FR-012**: System MUST display "Cannot divide by zero" in Results box when division by zero is attempted
+- **FR-011**: System MUST display error message "Invalid input" in output box when non-numeric values are entered for subtract, multiply, or divide operations
+- **FR-012**: System MUST display "Cannot divide by zero" in output box when division by zero is attempted
 - **FR-008**: Echo input button MUST be styled with blue background and white text
 - **FR-009**: Calculator operation buttons MUST be styled with green background and white text
 - **FR-010**: System MUST maintain proper spacing with two blank lines between major interface sections
