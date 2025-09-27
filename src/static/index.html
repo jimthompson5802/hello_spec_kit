@@ -8,14 +8,24 @@
   </head>
   <body>
     <main class="container">
-      <h1>Simple Web App</h1>
+      <!-- FR-001: Static top section with title and mode buttons -->
+      <header class="top-section">
+        <h1>Simple Web App</h1>
+        <div class="mode-buttons row">
+          <button id="echo-mode-btn" class="btn btn-blue">Echo</button>
+          <button id="compute-mode-btn" class="btn btn-green">Compute</button>
+        </div>
+      </header>
 
-      <section class="echo">
+      <hr />
+
+      <!-- FR-003: Dynamic bottom section - Echo interface -->
+      <section id="echo-interface" class="interface-section" style="display: none;">
         <h2>Echo Input</h2>
         <label for="enter-text">Enter Text</label>
         <div class="row">
           <input id="enter-text" type="text" />
-          <button id="echo-btn" class="btn btn-blue">Echo</button>
+          <button id="echo-btn" class="btn btn-blue">Echo Input</button>
         </div>
         <div>
           <label for="echo-output">Output</label>
@@ -23,9 +33,8 @@
         </div>
       </section>
 
-      <hr />
-
-      <section class="calculator">
+      <!-- FR-004: Dynamic bottom section - Compute interface -->
+      <section id="compute-interface" class="interface-section" style="display: none;">
         <h2>Simple Calculator</h2>
         <div class="inputs row">
           <div class="col">

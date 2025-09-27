@@ -12,10 +12,14 @@ import logging
 from typing import Any, Dict, Tuple
 
 from flask import Flask, Response, jsonify, request, send_from_directory
+from flask_cors import CORS
 
-from .services import add_xy, calculate, echo_text
+from services import add_service, calculate_service, echo_service
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
+
+# Configure CORS for API endpoints (allows frontend-backend communication)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configure logger only if no handlers are present to avoid clobbering test runners
 logger = logging.getLogger(__name__)
@@ -23,6 +27,27 @@ if not logger.handlers:
     logging.basicConfig(
         level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s"
     )
+
+
+# Error handling middleware
+@app.errorhandler(404)
+def not_found(error) -> Tuple[Response, int]:
+    """Handle 404 errors with JSON response."""
+    return jsonify({"success": False, "error": "Endpoint not found"}), 404
+
+
+@app.errorhandler(500)
+def internal_error(error) -> Tuple[Response, int]:
+    """Handle 500 errors with JSON response."""
+    logger.exception("Internal server error")
+    return jsonify({"success": False, "error": "Internal server error"}), 500
+
+
+@app.errorhandler(Exception)
+def handle_exception(error) -> Tuple[Response, int]:
+    """Handle unexpected exceptions with JSON response."""
+    logger.exception("Unhandled exception: %s", error)
+    return jsonify({"success": False, "error": "An unexpected error occurred"}), 500
 
 
 @app.route("/")
@@ -41,8 +66,8 @@ def api_echo() -> Tuple[Response, int]:
     """Echo the trimmed `text` field from the JSON body.
 
     Expects a JSON body with a `text` field. Returns a JSON object
-    with an `echoed` key containing the prefixed text. If the request
-    body is missing or invalid JSON, a 400 response is returned.
+    with `result`, `success`, and optional `error` fields following
+    the new API contract specification.
 
     Returns:
         Tuple of (Flask Response, status code).
@@ -51,21 +76,33 @@ def api_echo() -> Tuple[Response, int]:
         data: Dict[str, Any] = request.get_json(silent=False) or {}
     except Exception:
         logger.exception("Invalid JSON in /api/echo request")
-        return jsonify({"error": "invalid JSON"}), 400
+        return jsonify({"success": False, "error": "invalid JSON"}), 400
 
-    echoed = echo_text(data)
-    return jsonify({"echoed": echoed}), 200
+    # Use new service function
+    response = echo_service(data)
+
+    # Convert response to dictionary
+    response_dict: Dict[str, Any] = {
+        "success": response.success,
+    }
+
+    if response.success:
+        response_dict["result"] = response.result
+    else:
+        response_dict["error"] = response.error
+
+    # Return appropriate HTTP status code
+    status_code = 200 if response.success else 400
+    return jsonify(response_dict), status_code
 
 
 @app.route("/api/calculate", methods=["POST"])
 def api_calculate() -> Tuple[Response, int]:
-    """Perform a calculation based on JSON input.
+    """Perform a calculation with `x`, `y`, and `operation` from the JSON body.
 
-    Expects JSON with keys: `x`, `y`, `operation`. Validation errors
-    caused by malformed input will return 400. Domain errors produced by
-    `services.calculate` (for example, division by zero) are returned in
-    the response body and preserve a 200 status to keep contract tests
-    behavior stable.
+    Expects a JSON body with `x`, `y`, and `operation` fields.
+    Returns a JSON object with `result`, `success`, and optional
+    `error` fields following the new API contract specification.
 
     Returns:
         Tuple of (Flask Response, status code).
@@ -74,37 +111,59 @@ def api_calculate() -> Tuple[Response, int]:
         data: Dict[str, Any] = request.get_json(silent=False) or {}
     except Exception:
         logger.exception("Invalid JSON in /api/calculate request")
-        return jsonify({"result": None, "error": "invalid JSON"}), 400
+        return jsonify({"success": False, "error": "invalid JSON"}), 400
 
-    result = calculate(data)
+    # Use new service function
+    response = calculate_service(data)
 
-    # If the service returned an error that indicates input/validation
-    # problems, surface it as a 400 to follow fail-fast behavior.
-    if result.error and result.error.lower().startswith("invalid"):
-        return jsonify({"result": result.result, "error": result.error}), 400
+    # Convert response to dictionary
+    response_dict: Dict[str, Any] = {
+        "success": response.success,
+    }
 
-    return jsonify({"result": result.result, "error": result.error}), 200
+    if response.success:
+        response_dict["result"] = response.result
+    else:
+        response_dict["error"] = response.error
+
+    # Return appropriate HTTP status code
+    status_code = 200 if response.success else 400
+    return jsonify(response_dict), status_code
 
 
 @app.route("/api/add", methods=["POST"])
 def api_add() -> Tuple[Response, int]:
-    """Endpoint implementing the Add behavior described in the spec.
+    """Add values `x` and `y` from the JSON body.
 
-    Accepts JSON `{x, y}` and returns either a numeric sum or a concatenated string.
-    Returns 400 for invalid/missing inputs.
+    Expects a JSON body with `x` and `y` fields. Returns a JSON object
+    with `result`, `success`, and optional `error` fields following
+    the new API contract specification.
+
+    Returns:
+        Tuple of (Flask Response, status code).
     """
     try:
-        data = request.get_json(silent=False) or {}
+        data: Dict[str, Any] = request.get_json(silent=False) or {}
     except Exception:
         logger.exception("Invalid JSON in /api/add request")
-        return jsonify({"error": "invalid JSON"}), 400
+        return jsonify({"success": False, "error": "invalid JSON"}), 400
 
-    try:
-        result = add_xy(data)
-    except ValueError as exc:
-        return jsonify({"error": str(exc)}), 400
+    # Use new service function
+    response = add_service(data)
 
-    return jsonify(result), 200
+    # Convert response to dictionary
+    response_dict: Dict[str, Any] = {
+        "success": response.success,
+    }
+
+    if response.success:
+        response_dict["result"] = response.result
+    else:
+        response_dict["error"] = response.error
+
+    # Return appropriate HTTP status code
+    status_code = 200 if response.success else 400
+    return jsonify(response_dict), status_code
 
 
 if __name__ == "__main__":

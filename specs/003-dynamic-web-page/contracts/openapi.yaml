@@ -1,0 +1,302 @@
+openapi: 3.1.0
+info:
+  title: Dynamic Web Page API
+  description: REST API for Echo and Calculate functions
+  version: 1.0.0
+  contact:
+    name: Dynamic Web Page Feature
+    
+servers:
+  - url: http://localhost:5000
+    description: Flask development server
+
+paths:
+  /api/echo:
+    post:
+      summary: Echo user input text
+      description: 'Returns user input prefixed with "YOU ENTERED: " or error message for empty input'
+      operationId: echoText
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EchoRequest'
+            examples:
+              validText:
+                summary: Valid text input
+                value:
+                  text: "Hello World"
+              emptyText:
+                summary: Empty text input (will return error)
+                value:
+                  text: ""
+      responses:
+        '200':
+          description: Echo operation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EchoResponse'
+              examples:
+                successResponse:
+                  summary: Successful echo
+                  value:
+                    result: "YOU ENTERED: Hello World"
+                    success: true
+        '400':
+          description: Bad request - empty input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EchoResponse'
+              examples:
+                emptyInputError:
+                  summary: Empty input error
+                  value:
+                    error: "Please enter text"
+                    success: false
+
+  /api/add:
+    post:
+      summary: Add or concatenate two values
+      description: Performs string concatenation when either operand is a string, otherwise mathematical addition
+      operationId: addValues
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRequest'
+            examples:
+              stringConcatenation:
+                summary: String concatenation
+                value:
+                  x: "Hello"
+                  y: "World"
+              mixedConcatenation:
+                summary: Mixed type concatenation
+                value:
+                  x: "Count: "
+                  y: 42
+              numericAddition:
+                summary: Numeric addition
+                value:
+                  x: 10
+                  y: 5
+      responses:
+        '200':
+          description: Addition/concatenation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationResponse'
+              examples:
+                stringResult:
+                  summary: String concatenation result
+                  value:
+                    result: "HelloWorld"
+                    type: "string"
+                    success: true
+                numericResult:
+                  summary: Numeric addition result
+                  value:
+                    result: 15
+                    type: "numeric"
+                    success: true
+        '400':
+          description: Bad request - missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationResponse'
+              examples:
+                missingFieldError:
+                  summary: Missing field error
+                  value:
+                    error: "Missing required field: x"
+                    type: "error"
+                    success: false
+
+  /api/calculate:
+    post:
+      summary: Perform mathematical calculations
+      description: Performs mathematical operations (subtract, multiply, divide) on numeric operands
+      operationId: calculateValues
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalculationRequest'
+            examples:
+              subtraction:
+                summary: Subtraction operation
+                value:
+                  x: 10
+                  y: 3
+                  operation: "subtract"
+              multiplication:
+                summary: Multiplication operation
+                value:
+                  x: 7
+                  y: 6
+                  operation: "multiply"
+              division:
+                summary: Division operation
+                value:
+                  x: 15
+                  y: 3
+                  operation: "divide"
+              divisionByZero:
+                summary: Division by zero (will return error)
+                value:
+                  x: 10
+                  y: 0
+                  operation: "divide"
+      responses:
+        '200':
+          description: Calculation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationResponse'
+              examples:
+                subtractionResult:
+                  summary: Subtraction result
+                  value:
+                    result: 7
+                    type: "numeric"
+                    success: true
+                multiplicationResult:
+                  summary: Multiplication result
+                  value:
+                    result: 42
+                    type: "numeric"
+                    success: true
+                divisionResult:
+                  summary: Division result
+                  value:
+                    result: 5
+                    type: "numeric"
+                    success: true
+        '400':
+          description: Bad request - invalid input or division by zero
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalculationResponse'
+              examples:
+                invalidInputError:
+                  summary: Non-numeric input error
+                  value:
+                    error: "Invalid input"
+                    type: "error"
+                    success: false
+                divisionByZeroError:
+                  summary: Division by zero error
+                  value:
+                    error: "Cannot divide by zero"
+                    type: "error"
+                    success: false
+
+components:
+  schemas:
+    EchoRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Text to echo back to user
+          maxLength: 1000
+          example: "Hello World"
+        timestamp:
+          type: string
+          format: date-time
+          description: Optional request timestamp
+          
+    EchoResponse:
+      type: object
+      required:
+        - success
+      properties:
+        result:
+          type: string
+          description: 'Echo result with "YOU ENTERED: " prefix'
+          example: "YOU ENTERED: Hello World"
+        success:
+          type: boolean
+          description: Operation success indicator
+          example: true
+        error:
+          type: string
+          description: Error message when operation fails
+          example: "Please enter text"
+          
+    AddRequest:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          oneOf:
+            - type: string
+            - type: number
+          description: First operand (string or number)
+          example: "Hello"
+        y:
+          oneOf:
+            - type: string
+            - type: number
+          description: Second operand (string or number)
+          example: "World"
+          
+    CalculationRequest:
+      type: object
+      required:
+        - x
+        - y
+        - operation
+      properties:
+        x:
+          type: number
+          description: First numeric operand
+          example: 10
+        y:
+          type: number
+          description: Second numeric operand
+          example: 5
+        operation:
+          type: string
+          enum: ["subtract", "multiply", "divide"]
+          description: Mathematical operation to perform
+          example: "multiply"
+          
+    CalculationResponse:
+      type: object
+      required:
+        - success
+        - type
+      properties:
+        result:
+          oneOf:
+            - type: string
+            - type: number
+          description: Calculation result or concatenated string
+          example: 15
+        type:
+          type: string
+          enum: ["numeric", "string", "error"]
+          description: Result type indicator
+          example: "numeric"
+        success:
+          type: boolean
+          description: Operation success indicator
+          example: true
+        error:
+          type: string
+          description: Error message when operation fails
+          example: "Cannot divide by zero"

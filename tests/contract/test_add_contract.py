@@ -1,30 +1,180 @@
-from pathlib import Path
+"""
+Contract tests for POST /api/add endpoint
+Tests API contract compliance according to OpenAPI specification
+"""
+
+import pytest
+import json
 
 
-def test_add_contract_schema():
-    """Lightweight validation of the OpenAPI contract for `/api/add`.
+@pytest.mark.contract
+class TestAddContract:
+    """Contract tests for /api/add endpoint"""
 
-    This test ensures the contract file exists and contains the minimal schema
-    requirements expected by the feature: request requires `x` and `y`, the
-    200 response contains `result` and `type`, and `type` enumerates `number` and `string`.
-    """
-    openapi_path = Path("specs/002-change-function-of/contracts/openapi.yaml")
-    assert openapi_path.exists(), "OpenAPI contract must exist"
+    def test_add_success_response_structure(self, client):
+        """Test successful add response matches contract schema"""
+        # Arrange
+        payload = {"x": 5.5, "y": 3.2}
 
-    content = openapi_path.read_text()
-    assert "/api/add" in content
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
 
-    # Check that request schema requires x and y
-    assert "required: [x, y]" in content or "required:\n  - x\n  - y" in content
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
 
-    # Check response 200 contains result and type
-    assert "responses:" in content
-    assert "'200'" in content or "200:" in content
-    assert "result" in content
-    assert "type:" in content
+        # Verify response structure matches AddResponse schema
+        assert "result" in data
+        assert "success" in data
+        assert data["success"] is True
+        assert data["result"] == 8.7
+        assert "error" not in data or data["error"] is None
 
-    # Ensure the `type` field enumerates allowed values
-    assert (
-        "enum: [number, string]" in content
-        or "enum:\n  - number\n  - string" in content
-    )
+    def test_add_integer_inputs(self, client):
+        """Test add endpoint with integer inputs"""
+        # Arrange
+        payload = {"x": 10, "y": 20}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == 30
+
+    def test_add_negative_numbers(self, client):
+        """Test add endpoint with negative numbers"""
+        # Arrange
+        payload = {"x": -5.5, "y": 3.2}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == -2.3
+
+    def test_add_missing_parameter_x_error(self, client):
+        """Test missing parameter 'x' returns 400 error"""
+        # Arrange
+        payload = {"y": 5.0}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "success" in data
+        assert data["success"] is False
+        assert "result" not in data or data["result"] is None
+
+    def test_add_missing_parameter_y_error(self, client):
+        """Test missing parameter 'y' returns 400 error"""
+        # Arrange
+        payload = {"x": 5.0}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert data["success"] is False
+        assert "result" not in data or data["result"] is None
+
+    def test_add_string_concatenation_mixed_x(self, client):
+        """Test string concatenation when x is string and y is number"""
+        # Arrange
+        payload = {"x": "invalid", "y": 5.0}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == "invalid5.0"
+
+    def test_add_string_concatenation_mixed_y(self, client):
+        """Test string concatenation when x is number and y is string"""
+        # Arrange
+        payload = {"x": 5.0, "y": "invalid"}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == "5.0invalid"
+
+    def test_add_string_concatenation_both_strings(self, client):
+        """Test string concatenation when both parameters are strings"""
+        # Arrange
+        payload = {"x": "hello", "y": "world"}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == "helloworld"
+
+    def test_add_numeric_strings(self, client):
+        """Test numeric addition when both parameters are numeric strings"""
+        # Arrange
+        payload = {"x": "10", "y": "20"}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data["success"] is True
+        assert data["result"] == 30.0
+
+    def test_add_empty_payload_error(self, client):
+        """Test empty payload returns 400 error"""
+        # Arrange
+        payload = {}
+
+        # Act
+        response = client.post(
+            "/api/add", data=json.dumps(payload), content_type="application/json"
+        )
+
+        # Assert
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data["success"] is False
+        assert "error" in data

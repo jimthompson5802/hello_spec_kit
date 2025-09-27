@@ -1,6 +1,14 @@
 # Simple Web Application (Spec Kit)
 
-This repository is a small example web application created as a specification kit. It contains a minimal web service, specification documents, and a test suite that exercises the service behavior.
+This repository is a web application created as a specification kit demonstrating a complete TDD (Test-Driven Development) workflow. It contains a Flask backend with REST API endpoints, a JavaScript frontend, comprehensive test suite, and complete specification documents.
+
+## Features
+
+- **Echo Service**: Text input with "YOU ENTERED: " prefix response
+- **Calculator Service**: Mathematical operations (add, subtract, multiply, divide) with string concatenation support
+- **Dynamic Interface**: Single-page application with switching between Echo and Calculator modes
+- **REST API**: JSON-based API endpoints with consistent response format (`{success, result, error}`)
+- **TDD Approach**: Complete test coverage with contract, integration, and unit tests
 
 **Repository layout**
 - `src/`: application code
@@ -8,9 +16,11 @@ This repository is a small example web application created as a specification ki
   - `models.py` - domain/data logic and simple model functions
   - `services.py` - service layer and business logic used by the app
 - `static/`: static frontend assets (`index.html`, `app.js`, `styles.css`)
-- `specs/001-simple-web-application/`: human-readable specification and supporting documents
-  - `spec.md`, `plan.md`, `quickstart.md`, `data-model.md`, `research.md`, `tasks.md`
-  - `contracts/openapi.yaml` - OpenAPI contract for API endpoints
+- `specs/`: human-readable specifications and supporting documents
+  - `001-simple-web-application/`: Initial web application specification
+  - `003-dynamic-web-page/`: Dynamic web page feature specification
+  - Each spec includes: `spec.md`, `plan.md`, `quickstart.md`, `data-model.md`, `research.md`, `tasks.md`
+  - `contracts/openapi.yaml` - OpenAPI contracts for API endpoints
 - `tests/`: automated tests
   - `unit/` - unit tests for models and services
   - `integration/` - integration tests exercising quickstart scenarios
@@ -34,14 +44,46 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Run the application (development)
+## Run the Application
+
+### Development Server
 
 ```bash
 # from repository root
-python src/app.py
+source venv/bin/activate
+PYTHONPATH=src python -m flask --app src.app run --debug --port 5000
 ```
 
-Open a browser at `http://localhost:5000` (or the port printed by the server) to view the static demo UI.
+### Alternative (Direct Script)
+
+```bash
+# from repository root  
+source venv/bin/activate
+cd src && python app.py
+```
+
+Open a browser at `http://127.0.0.1:5000` to access the web application.
+
+### API Endpoints
+
+The application provides three REST API endpoints:
+
+- `POST /api/echo` - Echo text input with prefix
+- `POST /api/add` - Add numbers or concatenate strings  
+- `POST /api/calculate` - Perform mathematical operations
+
+Example API usage:
+
+```bash
+# Echo service
+curl http://127.0.0.1:5000/api/echo -X POST -H "Content-Type: application/json" -d '{"text":"Hello World"}'
+
+# Add service (concatenation)
+curl http://127.0.0.1:5000/api/add -X POST -H "Content-Type: application/json" -d '{"x":"foo","y":"bar"}'
+
+# Calculate service  
+curl http://127.0.0.1:5000/api/calculate -X POST -H "Content-Type: application/json" -d '{"x":10,"y":5,"operation":"multiply"}'
+```
 
 ![](./images/app_web_page.png)
 
