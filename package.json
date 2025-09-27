@@ -1,0 +1,40 @@
+{
+  "name": "dynamic-web-page",
+  "version": "1.0.0",
+  "description": "Dynamic web page with Echo and Compute functions",
+  "main": "src/static/app.js",
+  "scripts": {
+    "build": "babel src/static/app.js --out-file src/static/app.compiled.js",
+    "dev": "babel src/static/app.js --out-file src/static/app.compiled.js --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/static/*.js",
+    "start": "python src/app.py"
+  },
+  "keywords": ["react", "flask", "web-app", "calculator", "echo"],
+  "author": "Dynamic Web Page Feature",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/cli": "^7.23.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/preset-env": "^7.23.0",
+    "eslint": "^8.50.0",
+    "eslint-plugin-react": "^7.33.0",
+    "jest": "^29.7.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "babel": {
+    "presets": ["@babel/preset-env", "@babel/preset-react"]
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["@testing-library/jest-dom"]
+  }
+}

@@ -1,8 +1,65 @@
+"""
+Service layer for the Dynamic Web Page feature.
+Contains business logic for echo, add, and calculate operations.
+"""
+
 from typing import Any, Dict
 
-from .models import CalculationRequest, CalculationResult, EchoRequest
+from models import (
+    AddRequest,
+    CalculateRequest,
+    CalculationRequest,  # Legacy alias
+    CalculationResponse,
+    CalculationResult,  # Legacy alias
+    EchoRequest,
+    EchoResponse,
+)
 
 
+def add_service(req_data: Dict[str, Any]) -> CalculationResponse:
+    """
+    Service function for add operations (T019).
+    Handles both numeric addition and string concatenation following business rules:
+    - Mixed types (one string, one number) → string concatenation
+    - Both strings that are numeric → numeric addition
+    - Both strings that are non-numeric → string concatenation
+    - Both numbers → numeric addition
+    - Empty strings should cause validation error
+    """
+    try:
+        req = AddRequest.from_dict(req_data)
+
+        # Check for empty strings (should cause error)
+        x_is_empty = isinstance(req.x, str) and req.x.strip() == ""
+        y_is_empty = isinstance(req.y, str) and req.y.strip() == ""
+        if x_is_empty or y_is_empty:
+            return CalculationResponse.error_response("Empty string values not allowed")
+
+        # Check if we have mixed types
+        x_is_str = isinstance(req.x, str)
+        y_is_str = isinstance(req.y, str)
+
+        # Mixed types → string concatenation
+        if x_is_str != y_is_str:  # One is string, one is not
+            result = str(req.x) + str(req.y)
+            return CalculationResponse.success_response(result)
+
+        # Both are same type - check if numeric operation is possible
+        if req.is_numeric_operation():
+            # Perform numeric addition
+            x_val, y_val = req.get_numeric_values()
+            result = x_val + y_val
+            return CalculationResponse.success_response(result)
+        else:
+            # Perform string concatenation
+            result = str(req.x) + str(req.y)
+            return CalculationResponse.success_response(result)
+
+    except ValueError as exc:
+        return CalculationResponse.error_response(str(exc))
+
+
+# Legacy function for backward compatibility
 def add_xy(req_data: Dict[str, Any]) -> Dict[str, Any]:
     """Add or concatenate X and Y according to feature rules.
 
@@ -70,13 +127,69 @@ def add_xy(req_data: Dict[str, Any]) -> Dict[str, Any]:
     return {"result": f"{x_val}{y_val}", "type": "string"}
 
 
+def echo_service(req_data: dict) -> EchoResponse:
+    """
+    Service function for echo operations (T018).
+    Processes echo requests and returns properly formatted responses.
+    """
+    try:
+        req = EchoRequest.from_dict(req_data)
+
+        # Check if text is empty after processing (business rule per FR-013)
+        if req.is_empty_text():
+            return EchoResponse.error_response("Please enter text")
+
+        # Return successful echo response with proper formatting
+        return EchoResponse.success_response(req.text)
+
+    except ValueError as exc:
+        return EchoResponse.error_response(str(exc))
+
+
+# Legacy function for backward compatibility
 def echo_text(req_data: dict) -> str:
+    """Legacy echo function - kept for backward compatibility."""
     req = EchoRequest.from_dict(req_data)
-    # Business rule: return trimmed text prefixed per FR-004
     return f"YOU ENTERED: {req.text}"
 
 
+def calculate_service(req_data: dict) -> CalculationResponse:
+    """
+    Service function for calculate operations (T020).
+    Performs mathematical calculations with proper error handling.
+    """
+    try:
+        req = CalculateRequest.from_dict(req_data)
+    except ValueError as exc:
+        return CalculationResponse.error_response(str(exc))
+
+    x = req.x
+    y = req.y
+    op = req.operation
+
+    try:
+        if op == "add":
+            result = x + y
+        elif op == "subtract":
+            result = x - y
+        elif op == "multiply":
+            result = x * y
+        elif op == "divide":
+            if y == 0:
+                return CalculationResponse.error_response("Cannot divide by zero")
+            result = x / y
+        else:
+            return CalculationResponse.error_response(f"Unsupported operation: {op}")
+
+        return CalculationResponse.success_response(result)
+
+    except Exception as exc:
+        return CalculationResponse.error_response(str(exc))
+
+
+# Legacy function for backward compatibility
 def calculate(req_data: dict) -> CalculationResult:
+    """Legacy calculate function - kept for backward compatibility."""
     try:
         req = CalculationRequest.from_dict(req_data)
     except ValueError as exc:

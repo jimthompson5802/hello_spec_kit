@@ -14,5 +14,15 @@ label{display:block;text-align:left;margin-bottom:6px;font-weight:600}
 .btn-green{background:#28a745;color:#fff}
 hr{margin:20px 0;border:none;border-top:1px solid #eee}
 .calc-buttons{justify-content:center;margin:12px 0}
+
+/* FR-001: Top section styling */
+.top-section{text-align:center;margin-bottom:12px}
+.mode-buttons{justify-content:center;margin:16px 0}
+
+/* FR-003, FR-004: Interface sections */
+.interface-section{margin-bottom:12px}
+.interface-section input[readonly]{background:#fafafa}
+
+/* Legacy support for existing class names */
 .echo,.calculator{margin-bottom:12px}
 .echo input[readonly],.calculator input[readonly]{background:#fafafa}

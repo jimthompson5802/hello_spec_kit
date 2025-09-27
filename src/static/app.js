@@ -8,6 +8,39 @@ async function postJson(url, body) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Interface switching elements
+  const echoModeBtn = document.getElementById('echo-mode-btn');
+  const computeModeBtn = document.getElementById('compute-mode-btn');
+  const echoInterface = document.getElementById('echo-interface');
+  const computeInterface = document.getElementById('compute-interface');
+
+  // Function to clear all input fields (FR-003, FR-004)
+  function clearAllFields() {
+    // Clear Echo interface fields
+    document.getElementById('enter-text').value = '';
+    document.getElementById('echo-output').value = '';
+    
+    // Clear Compute interface fields
+    document.getElementById('x').value = '';
+    document.getElementById('y').value = '';
+    document.getElementById('result').value = '';
+  }
+
+  // FR-003: Echo mode functionality
+  echoModeBtn.addEventListener('click', () => {
+    clearAllFields();
+    echoInterface.style.display = 'block';
+    computeInterface.style.display = 'none';
+  });
+
+  // FR-004: Compute mode functionality  
+  computeModeBtn.addEventListener('click', () => {
+    clearAllFields();
+    echoInterface.style.display = 'none';
+    computeInterface.style.display = 'block';
+  });
+
+  // Echo interface elements
   const echoBtn = document.getElementById('echo-btn');
   const echoInput = document.getElementById('enter-text');
   const echoOutput = document.getElementById('echo-output');
@@ -16,8 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const text = (echoInput.value || '').trim();
     try {
       const data = await postJson('/api/echo', { text });
-      // Contract expects { echoed: ... }
-      echoOutput.value = data.echoed ?? '';
+      // New API format: { success: boolean, result?: string, error?: string }
+      if (data.success) {
+        echoOutput.value = data.result ?? '';
+      } else {
+        echoOutput.value = `Error: ${data.error}`;
+      }
     } catch (err) {
       echoOutput.value = 'Error';
     }
@@ -37,18 +74,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (op === 'add') {
           // Use new backend Add endpoint which handles mixed types
           const data = await postJson('/api/add', { x, y });
-          if (data.error) {
-            resultOutput.value = `Error: ${data.error}`;
-          } else {
+          if (data.success) {
             resultOutput.value = String(data.result);
+          } else {
+            resultOutput.value = `Error: ${data.error}`;
           }
         } else {
-          // Keep existing calculate endpoint for other operations
+          // Keep existing calculate endpoint for other operations  
           const data = await postJson('/api/calculate', { x, y, operation: op });
-          if (data.error) {
-            resultOutput.value = `Error: ${data.error}`;
-          } else {
+          if (data.success) {
             resultOutput.value = String(data.result);
+          } else {
+            resultOutput.value = `Error: ${data.error}`;
           }
         }
       } catch (err) {
