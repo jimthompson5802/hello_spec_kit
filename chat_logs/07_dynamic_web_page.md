@@ -1,3 +1,5 @@
+# VSCode Agent Mode with GHCP using Claude Sonnet 4
+
 # /specify
 
 jimthompson5802: Follow instructions in [specify.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/specify.prompt.md).
