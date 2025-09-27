@@ -750,6 +750,8 @@ The plan incorporates all your technical requirements (Flask backend, React fron
 
 Made changes.
 
+# /tasks
+
 jimthompson5802: Follow instructions in [tasks.prompt.md](file:///Users/jim/Desktop/genai/hello_spec_kit/.github/prompts/tasks.prompt.md).
 
 GitHub Copilot: I'll follow the instructions in the tasks.prompt.md file to generate actionable, dependency-ordered tasks for the Dynamic Web Page feature. Let me start by running the prerequisites check script. 
